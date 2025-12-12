@@ -4,6 +4,13 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>MyExpenses.Repository</Title>
+    <Description>Repository pattern for My Expenses application</Description>
+    <PackageProjectUrl>https://github.com/My-Expenses-by-Phong</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/My-Expenses-by-Phong/MyExpenses.Repository</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
   </PropertyGroup>
 
 </Project>
