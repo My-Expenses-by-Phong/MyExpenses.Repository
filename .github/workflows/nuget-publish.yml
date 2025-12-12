@@ -1,0 +1,47 @@
+name: Build and Publish NuGet Package
+
+on:
+  push:
+    tags: [ 'v*' ]
+
+# Add permissions for the GITHUB_TOKEN
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+        
+    - name: Set Version
+      run: |
+        if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+          echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+        else
+          echo "VERSION=1.0.${{ github.run_number }}" >> $GITHUB_ENV
+        fi
+        
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Build
+      run: dotnet build --configuration Release --no-restore /p:Version=${{ env.VERSION }}
+      
+    - name: Pack
+      run: dotnet pack --configuration Release --no-build --output ./artifacts /p:PackageVersion=${{ env.VERSION }}
+      
+    - name: Publish to GitHub Packages
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+      run: |
+        dotnet nuget push ./artifacts/*.nupkg \
+          --source https://nuget.pkg.github.com/My-Expenses-by-Phong/index.json \
+          --api-key ${{ secrets.GITHUB_TOKEN }} \
+          --skip-duplicate
